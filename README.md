@@ -1,2 +1,2 @@
 # NIKE
-Repositori amb informació de les sabetes de Nike
+Repositori amb informació de les sabates de Nike
