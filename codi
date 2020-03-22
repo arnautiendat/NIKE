@@ -1,0 +1,45 @@
+import requests
+from bs4 import BeautifulSoup
+import csv
+import os
+
+#Revisant robots.txt es veu sobre quines pagines no es pot fer scrapping. 
+import urllib.robotparser
+rp = urllib.robotparser.RobotFileParser()
+rp.set_url('http://www.nike.com/robots.txt')
+rp.read()
+url = 'https://www.nike.com/es/w/hombre-zapatillas-nik1zy7ok'
+user_agent = 'wswp'
+print(rp.can_fetch(user_agent, url))
+
+#Es crea l'scrapp
+
+page = requests.get("https://www.nike.com/es/w/hombre-zapatillas-nik1zy7ok")
+soup = BeautifulSoup(page.content)
+
+llista_bambes = []
+llistat = soup.find(class_="product-grid__items ta-lg-l pb9-sm pb0-lg css-1oud6ob")
+
+for descripcio in llistat.find_all('div', class_="product-card__info"):
+    nom = descripcio.find(class_="product-card__title").string
+    clase = descripcio.find(class_="product-card__subtitle").string
+    colors = descripcio.find(class_="product-card__product-count").string
+    try:
+        preu = descripcio.find(class_="css-b9fpep").string
+        preu_antic = preu
+    except:
+        preu = descripcio.find(class_="css-i260wg").string
+        preu_antic = descripcio.find(class_="css-31z3ik css-ndethb").string
+    text = nom + "," + clase + "," + colors + "," + preu + "," + preu_antic
+    llista_bambes.append(text)
+    
+    
+print(llista_bambes)
+
+filename = "bambes.csv"
+filePath = os.path.join('/home/datasci/NIKE', filename)
+
+with open(filePath, 'w', newline='') as csvFile:
+    for bamba in llista_bambes:
+        csvFile.write(bamba)
+        csvFile.write('\n')
